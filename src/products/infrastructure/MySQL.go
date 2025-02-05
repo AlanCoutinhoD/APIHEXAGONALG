@@ -24,24 +24,25 @@ func (mysql *MySQL) Save() {
 	log.Println("Método Save() está deprecado. Por favor usar Create()")
 }
 
-func (mysql *MySQL) GetAll() []entities.Product {
+func (m *MySQL) GetAll() []entities.Product {
 	query := "SELECT * FROM product"
-	rows := mysql.conn.FetchRows(query)
+	rows, err := m.conn.FetchRows(query)
+	if err != nil {
+		log.Fatalf("Error al obtener productos: %v", err)
+	}
 	defer rows.Close()
 
 	var products []entities.Product
 	for rows.Next() {
-		var idproduct int
-		var name string
-		var price float32
-		if err := rows.Scan(&idproduct, &name, &price); err != nil {
-			fmt.Println("error al escanear la fila: %w", err)
+		var product entities.Product
+		if err := rows.Scan(&product.ID, &product.Name, &product.Price); err != nil {
+			log.Printf("Error al escanear el producto: %v", err)
 		}
-		products = append(products, entities.Product{ID: idproduct, Name: name, Price: float64(price)})
+		products = append(products, product)
 	}
 
 	if err := rows.Err(); err != nil {
-		fmt.Println("error iterando sobre las filas: %w", err)
+		fmt.Println("Error al iterar sobre las filas: %w", err)
 	}
 
 	return products
@@ -49,12 +50,17 @@ func (mysql *MySQL) GetAll() []entities.Product {
 
 func (m *MySQL) GetByID(id string) entities.Product {
 	query := "SELECT * FROM product WHERE id = ?"
-	rows := m.conn.FetchRows(query, id)
+	rows, err := m.conn.FetchRows(query, id)
+	if err != nil {
+		log.Fatalf("Error al obtener el producto: %v", err)
+	}
 	defer rows.Close()
 
 	var product entities.Product
 	for rows.Next() {
-		rows.Scan(&product.ID, &product.Name, &product.Price)
+		if err := rows.Scan(&product.ID, &product.Name, &product.Price); err != nil {
+			log.Printf("Error al escanear el producto: %v", err)
+		}
 	}
 
 	return product

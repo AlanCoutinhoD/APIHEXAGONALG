@@ -9,17 +9,20 @@ import (
 
 func Init(router *gin.Engine) {
 	employeeRepo := NewMySQL()
-	
+
 	getAllEmployee := application.NewListEmployee(employeeRepo)
 	listEmployeeController := controllers.NewListEmployeeController(*getAllEmployee)
 
 	createEmployee := application.NewCreateEmployee(employeeRepo)
 	createEmployeeController := controllers.NewCreateEmployeeController(*createEmployee)
 
-	employeeRouter := NewEmployeeRouter(listEmployeeController, createEmployeeController)
+	updateEmployee := application.NewUpdateEmployee(employeeRepo)
+	updateEmployeeController := controllers.NewUpdateEmployeeController(updateEmployee)
+
+	deleteEmployee := application.NewDeleteEmployee(employeeRepo)
+	deleteEmployeeController := controllers.NewDeleteEmployeeController(deleteEmployee)
+
+	employeeRouter := NewEmployeeRouter(listEmployeeController, createEmployeeController, updateEmployeeController, deleteEmployeeController)
 	employeeRouter.SetupRoutes(router)
 
-
-
-	
 }
