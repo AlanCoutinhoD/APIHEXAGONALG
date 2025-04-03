@@ -22,7 +22,9 @@ func Init(router *gin.Engine) {
 	deleteEmployee := application.NewDeleteEmployee(employeeRepo)
 	deleteEmployeeController := controllers.NewDeleteEmployeeController(deleteEmployee)
 
-	employeeRouter := NewEmployeeRouter(listEmployeeController, createEmployeeController, updateEmployeeController, deleteEmployeeController)
-	employeeRouter.SetupRoutes(router)
+	listEmployeeById := application.NewListEmployeeById(employeeRepo)
+	listEmployeeByIdController := controllers.NewListEmployeeByIdController(listEmployeeById)
 
+	employeeRouter := NewEmployeeRouter(listEmployeeController, createEmployeeController, updateEmployeeController, deleteEmployeeController, listEmployeeByIdController)
+	employeeRouter.SetupRoutes(router)
 }

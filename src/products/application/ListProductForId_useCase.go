@@ -1,19 +1,23 @@
 package application
 
 import (
+	"demo/src/products/domain/repositories"
 	"demo/src/products/domain/entities"
-	"demo/src/products/domain"
+	"strconv"
 )
 
 type ListProductForId struct {
-	repository domain.ProductRepository
+	repository domain.IProductRepository
 }
 
-
-func NewListProductForId(repository domain.ProductRepository) *ListProductForId {
+func NewListProductForId(repository domain.IProductRepository) *ListProductForId {
 	return &ListProductForId{repository: repository}
 }
 
-func (lp *ListProductForId) Execute(id string) entities.Product {
-	return lp.repository.GetByID(id)
+func (lp *ListProductForId) Execute(id string) (*entities.Product, error) {
+	intID, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, err
+	}
+	return lp.repository.GetByID(intID)
 }

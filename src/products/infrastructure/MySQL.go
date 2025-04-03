@@ -48,22 +48,24 @@ func (m *MySQL) GetAll() []entities.Product {
 	return products
 }
 
-func (m *MySQL) GetByID(id string) entities.Product {
+func (m *MySQL) GetByID(id int) (*entities.Product, error) {
+	log.Printf("Buscando producto con ID: %d", id)
 	query := "SELECT * FROM product WHERE id = ?"
 	rows, err := m.conn.FetchRows(query, id)
 	if err != nil {
-		log.Fatalf("Error al obtener el producto: %v", err)
+		return nil, err
 	}
 	defer rows.Close()
 
 	var product entities.Product
-	for rows.Next() {
+	if rows.Next() {
 		if err := rows.Scan(&product.ID, &product.Name, &product.Price); err != nil {
-			log.Printf("Error al escanear el producto: %v", err)
+			return nil, err
 		}
+		return &product, nil
 	}
 
-	return product
+	return nil, fmt.Errorf("Producto no encontrado")
 }
 
 func (m *MySQL) Create(product entities.Product) error {
@@ -79,5 +81,23 @@ func (m *MySQL) Create(product entities.Product) error {
 		log.Printf("[MySQL] - Producto creado correctamente")
 	}
 
+	return nil
+}
+
+func (m *MySQL) Delete(id int) error {
+	query := "DELETE FROM product WHERE id = ?"
+	_, err := m.conn.ExecutePreparedQuery(query, id)
+	if err != nil {
+		return fmt.Errorf("error al eliminar el producto: %v", err)
+	}
+	return nil
+}
+
+func (m *MySQL) Update(product entities.Product) error {
+	query := "UPDATE product SET name = ?, price = ? WHERE id = ?"
+	_, err := m.conn.ExecutePreparedQuery(query, product.Name, product.Price, product.ID)
+	if err != nil {
+		return fmt.Errorf("error al actualizar el producto: %v", err)
+	}
 	return nil
 }

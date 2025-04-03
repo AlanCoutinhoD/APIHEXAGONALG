@@ -1,15 +1,15 @@
 package application
 
 import (
-	"demo/src/products/domain"
+	"demo/src/products/domain/repositories"
 	"demo/src/products/domain/entities"
 )
 
 type CreateProduct struct {
-	repository domain.ProductRepository
+	repository domain.IProductRepository
 }
 
-func NewCreateProduct(repository domain.ProductRepository) *CreateProduct {
+func NewCreateProduct(repository domain.IProductRepository) *CreateProduct {
 	return &CreateProduct{repository: repository}
 }
 

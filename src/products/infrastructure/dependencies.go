@@ -8,8 +8,10 @@ import (
 )
 
 func Init(router *gin.Engine) {
-	// Crear producto
+	
 	ps := NewMySQL()
+	
+	// Crear producto
 	createProduct := application.NewCreateProduct(ps)
 	createProductController := controllers.NewCreateProductController(createProduct)
 
@@ -20,9 +22,17 @@ func Init(router *gin.Engine) {
 
 	// Listar producto por id
 	listProductForId := application.NewListProductForId(productRepo)
-	listProductForIdController := controllers.NewListProductForIdController(*listProductForId)
+	listProductForIdController := controllers.NewListProductForIdController(listProductForId)
 
-	// Configura las rutas
-	productRouter := NewProductRouter(listProductController, createProductController, listProductForIdController)
+	// Eliminar producto
+	deleteProduct := application.NewDeleteProduct(productRepo)
+	deleteProductController := controllers.NewDeleteProductController(deleteProduct)
+
+	// Actualizar producto
+	updateProduct := application.NewUpdateProduct(productRepo)
+	updateProductController := controllers.NewUpdateProductController(updateProduct)
+
+	
+	productRouter := NewProductRouter(listProductController, createProductController, listProductForIdController, deleteProductController, updateProductController)
 	productRouter.SetupRoutes(router)
 }

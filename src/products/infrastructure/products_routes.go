@@ -7,25 +7,30 @@ import (
 )
 
 type ProductRouter struct {
-	listController   *controllers.ListProductController
-	createController *controllers.CreateProductController
+	listController      *controllers.ListProductController
+	createController    *controllers.CreateProductController
 	listForIdController *controllers.ListProductForIdController
+	deleteController    *controllers.DeleteProductController
+	updateController    *controllers.UpdateProductController
 }
 
-func NewProductRouter(listController *controllers.ListProductController, createController *controllers.CreateProductController, listForIdController *controllers.ListProductForIdController) *ProductRouter {
+func NewProductRouter(listController *controllers.ListProductController, createController *controllers.CreateProductController, listForIdController *controllers.ListProductForIdController, deleteController *controllers.DeleteProductController, updateController *controllers.UpdateProductController) *ProductRouter {
 	return &ProductRouter{
-		listController:   listController,
-		createController: createController,
+		listController:      listController,
+		createController:    createController,
 		listForIdController: listForIdController,
+		deleteController:    deleteController,
+		updateController:    updateController,
 	}
 }
 
-// SetupRoutes configura todas las rutas relacionadas con productos
 func (pr *ProductRouter) SetupRoutes(router *gin.Engine) {
 	productsGroup := router.Group("/products")
 	{
 		productsGroup.GET("", pr.listController.Execute)
 		productsGroup.GET("/:id", pr.listForIdController.Execute)
 		productsGroup.POST("", pr.createController.Execute)
+		productsGroup.DELETE("/:id", pr.deleteController.Execute)
+		productsGroup.PUT("/:id", pr.updateController.Execute)
 	}
 }
